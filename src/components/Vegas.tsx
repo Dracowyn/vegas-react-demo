@@ -572,9 +572,13 @@ const Vegas = React.forwardRef<
                     }}
                 />
             )}
-            <AnimatePresence mode="sync">
-                {visibleSlides.map(index => renderSlide(index))}
-            </AnimatePresence>
+            {/* 渲染幻灯片 */}
+            {/*在isPlaying为true时，渲染幻灯片*/}
+            {isPlaying && (
+                <AnimatePresence mode={"sync"}>
+                    {visibleSlides.map(index => renderSlide(index))}
+                </AnimatePresence>
+            )}
             {/* 渲染遮罩层 */}
             {overlay && (
                 <div
