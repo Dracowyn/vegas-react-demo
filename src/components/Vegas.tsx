@@ -34,7 +34,7 @@ interface VegasProps {
     // 第一次切换动画
     firstTransition?: string | null;
     // 第一次切换动画持续时间
-    firstTransitionDuration?: number | null;
+    firstTransitionDuration?: number;
     // 切换动画类型
     transition?: string;
     // 切换动画持续时间
@@ -48,8 +48,8 @@ interface VegasProps {
     // 保持的幻灯片数量
     slidesToKeep?: number;
     // 默认背景图
-    defaultBackground?: string;
-    // 默认背景图存在时间
+    defaultBackground?: string | {};
+    // 默认背景图与第一张幻灯片间隔时间
     defaultBackgroundDuration?: number;
     // 是否启用日志
     debug?: boolean;
@@ -69,8 +69,6 @@ interface VegasProps {
         transition?: string | null;
         // 当前幻灯片切换动画持续时间
         transitionDuration?: number | null;
-        // 当前幻灯片动画
-        animation?: string | null;
         // 当前幻灯片是否覆盖
         cover?: boolean;
         // 视频配置
@@ -124,10 +122,11 @@ const Vegas = React.forwardRef<
         color = null, // 背景颜色
         align = "center", // 水平对齐方式
         valign = "center", // 垂直对齐方式
+        firstTransitionDuration = 3000, // 第一次切换动画持续时间
         transition = "fade", // 切换动画类型
         transitionDuration = 1000, // 切换动画持续时间
         defaultBackground, // 默认背景图
-        defaultBackgroundDuration = 3000, // 默认背景图存在时间
+        defaultBackgroundDuration = 3000, // 默认背景图与第一张幻灯片间隔时间
         debug = false, // 是否启用日志
         slides, // 幻灯片配置数组
         onInit, // 初始化回调
@@ -164,73 +163,74 @@ const Vegas = React.forwardRef<
     const containerRef = useRef<HTMLDivElement>(null); // 容器引用
     const [loading, setLoading] = useState(true);
     const [showDefaultBg, setShowDefaultBg] = useState(true); // 控制默认背景显示
+    const [isFirstTransition, setIsFirstTransition] = useState(true); // 跟踪是否是第一次切换
 
     // 动画变体配置
     const variants = {
-        fade: {
-            enter: { opacity: 1, transition: { duration: transitionDuration / 1000 } },
+        fade: (custom: { duration: number }) => ({
+            enter: { opacity: 1, transition: { duration: custom.duration } },
             exit: { opacity: 0, transition: { duration: transitionDuration / 1000 } }
-        },
-        slideLeft: {
+        }),
+        slideLeft: (custom: { duration: number }) => ({
             enter: {
                 x: 0,
                 opacity: 1,
-                transition: { duration: transitionDuration / 1000 }
+                transition: { duration: custom.duration }
             },
             exit: {
                 x: "-100%",
                 opacity: 0,
                 transition: { duration: transitionDuration / 1000 }
             }
-        },
-        slideRight: {
+        }),
+        slideRight: (custom: { duration: number }) => ({
             enter: {
                 x: 0,
                 opacity: 1,
-                transition: { duration: transitionDuration / 1000 }
+                transition: { duration: custom.duration }
             },
             exit: {
                 x: "100%",
                 opacity: 0,
                 transition: { duration: transitionDuration / 1000 }
             }
-        },
-        zoomIn: {
+        }),
+        zoomIn: (custom: { duration: number }) => ({
             enter: {
                 scale: 1,
                 opacity: 1,
-                transition: { duration: transitionDuration / 1000 }
+                transition: { duration: custom.duration }
             },
             exit: {
                 scale: 0.5,
                 opacity: 0,
                 transition: { duration: transitionDuration / 1000 }
             }
-        },
-        zoomOut: {
+        }),
+        zoomOut: (custom: { duration: number }) => ({
             enter: {
                 scale: 1,
                 opacity: 1,
-                transition: { duration: transitionDuration / 1000 }
+                transition: { duration: custom.duration }
             },
             exit: {
-                scale: 1.5,
+                scale: 1.25,
                 opacity: 0,
                 transition: { duration: transitionDuration / 1000 }
             }
-        },
-        zoomInOut: {
+        }),
+        zoomInOut: (custom: { duration: number }) => ({
             enter: {
-                scale: 1.5,
+                scale: 1.25,
                 opacity: 1,
-                transition: { duration: transitionDuration / 1000 }
+                transition: { duration: custom.duration }
             },
             exit: {
                 scale: 1,
                 opacity: 0,
                 transition: { duration: transitionDuration / 1000 }
             }
-        }
+        })
     } as const;
 
     // 防抖函数实现
@@ -373,6 +373,7 @@ const Vegas = React.forwardRef<
 
     // 切换到下一张幻灯片
     const next = () => {
+        setIsFirstTransition(false);
         if (isTransitioning) {
             log("正在切换中,跳过本次切换");
             return;
@@ -454,6 +455,10 @@ const Vegas = React.forwardRef<
                 objectPosition: `${slide.align || align} ${slide.valign || valign}`
             };
 
+            // 确定切换持续时间
+            const currentTransitionDurationValue = isFirstTransition ? firstTransitionDuration : transitionDuration;
+            log(`当前切换动画持续时间: ${currentTransitionDurationValue}ms`);
+
             // 根据类型渲染视频或图片
             const content = slide.video ? (
                 <video
@@ -485,13 +490,17 @@ const Vegas = React.forwardRef<
                         // 图片加载完成后,延迟一段时间再隐藏默认背景,实现平滑过渡
                         setTimeout(() => {
                             setShowDefaultBg(false);
-                        }, transitionDuration);
+                        }, currentTransitionDurationValue);
                     }}
                     onError={() => {
                         logError(`图片加载失败: ${slide.src}`);
                     }}
                 />
             );
+
+            // 解构variants对象,获取当前动画类型的变体函数
+            const variant = variants[currentTransition as keyof typeof variants] || variants.fade;
+
 
             // 使用motion.div包装内容并应用动画
             return (
@@ -501,8 +510,9 @@ const Vegas = React.forwardRef<
                     animate="enter"
                     exit="exit"
                     variants={
-                        variants[currentTransition as keyof typeof variants] ||
-                        variants.fade
+                        currentTransition in variants
+                            ? variant({ duration: currentTransitionDurationValue / 1000 })
+                            : variant({ duration: transitionDuration / 1000 })
                     }
                     style={{
                         position: "absolute",
@@ -588,7 +598,7 @@ const Vegas = React.forwardRef<
                         left: 0,
                         width: "100%",
                         height: "100%",
-                        background: "rgba(0,0,0,0)"
+                        background: "rgba(0,0,0,0.3)"
                     }}
                 />
             )}
