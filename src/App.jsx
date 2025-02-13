@@ -7,7 +7,7 @@ import b2 from './images/b2.jpg';
 import b3 from './images/b3.jpg';
 import b4 from './images/b4.jpg';
 import b5 from './images/b5.jpg';
-import b6 from './images/dragon3.png';
+import b6 from './images/b6.jpg';
 
 // 登录页面组件
 const LoginPage = () => {
@@ -18,32 +18,44 @@ const LoginPage = () => {
 		{
 			src: b1,
 			delay: 7000,
-			transition: 'fade'
+			transition: 'fade',
+			align: 'center',
+			valign: 'center',
 		},
 		{
 			src: b2,
 			delay: 7000,
-			transition: 'slideLeft'
+			transition: 'slideLeft',
+			align: 'center',
+			valign: 'center',
 		},
 		{
 			src: b3,
 			delay: 7000,
-			transition: 'slideRight'
+			transition: 'slideRight',
+			align: 'center',
+			valign: 'center',
 		},
 		{
 			src: b4,
 			delay: 7000,
-			transition: 'zoomIn'
+			transition: 'zoomIn',
+			align: 'center',
+			valign: 'center',
 		},
 		{
 			src: b5,
 			delay: 7000,
-			transition: 'zoomOut'
+			transition: 'zoomOut',
+			align: 'center',
+			valign: 'center',
 		},
 		{
 			src: b6,
 			delay: 7000,
-			transition: 'zoomInOut'
+			transition: 'zoomInOut',
+			align: 'center',
+			valign: 'center',
 		}
 	];
 
@@ -65,6 +77,7 @@ const LoginPage = () => {
 				defaultBackground={defaultBackground}
 				defaultBackgroundDelay={2000}
 				debug={true}
+				color={'#000'}
 			/>
 
 			{/* 登录表单容器 */}
