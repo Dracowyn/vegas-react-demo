@@ -1,13 +1,12 @@
-import Vegas from './components/Vegas';
+import {Vegas} from "react-vegas";
 
-import defaultBackground from './images/dragon4.png';
-
-import b1 from './images/b1.jpg';
-import b2 from './images/b2.jpg';
-import b3 from './images/b3.jpg';
-import b4 from './images/b4.jpg';
-import b5 from './images/b5.jpg';
-import b6 from './images/b6.jpg';
+const p1 = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb';
+const p2 = 'https://images.unsplash.com/photo-1741986947217-d1a0ecc39149';
+const p3 = 'https://cdn.pixabay.com/photo/2023/12/24/16/43/autumn-8467482_1280.jpg';
+const p4 = 'https://cdn.pixabay.com/photo/2024/05/21/21/46/bird-8779199_1280.jpg';
+const p5 = 'https://cdn.pixabay.com/photo/2021/03/13/21/54/planet-6092940_1280.jpg';
+const p6 = 'https://cdn.pixabay.com/photo/2023/08/31/14/40/mountain-8225287_1280.jpg';
+const defaultBackground = 'https://images.unsplash.com/photo-1742560897614-69c3f47771be';
 
 // 登录页面组件
 const LoginPage = () => {
@@ -16,42 +15,42 @@ const LoginPage = () => {
 
 	const slides = [
 		{
-			src: b1,
+			src: p1,
 			delay: 7000,
 			transition: 'fade',
 			align: 'center',
 			valign: 'center',
 		},
 		{
-			src: b2,
+			src: p2,
 			delay: 7000,
 			transition: 'slideLeft',
 			align: 'center',
 			valign: 'center',
 		},
 		{
-			src: b3,
+			src: p3,
 			delay: 7000,
 			transition: 'slideRight',
 			align: 'center',
 			valign: 'center',
 		},
 		{
-			src: b4,
+			src: p4,
 			delay: 7000,
 			transition: 'zoomIn',
 			align: 'center',
 			valign: 'center',
 		},
 		{
-			src: b5,
+			src: p5,
 			delay: 7000,
 			transition: 'zoomOut',
 			align: 'center',
 			valign: 'center',
 		},
 		{
-			src: b6,
+			src: p6,
 			delay: 7000,
 			transition: 'zoomInOut',
 			align: 'center',
