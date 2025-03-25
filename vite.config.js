@@ -13,7 +13,6 @@ export default defineConfig({
 		lib: {
 			entry: 'src/index.ts',
 			name: 'ReactVegas',
-			fileName: (format) => `react-vegas.${format}.js`,
 			formats: ['es', 'cjs'],
 		},
 		rollupOptions: {
